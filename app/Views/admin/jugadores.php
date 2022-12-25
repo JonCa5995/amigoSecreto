@@ -63,8 +63,26 @@
 				<th>Total jugadores</th>
 				<td><?= $pager->getTotal() ?> </td>
 			</tr>
+			<?php if ($activados > 0) : ?>
 			<tr>
-				<td colspan="5">
+				<th>Jugadores activados</th>
+				<td><?= $activados ?> </td>
+			</tr>
+			<?php endif ?>
+			<?php if ($restablecen > 0) : ?>
+				<tr>
+					<th>Restablecer clave de </th>
+					<td><?= $restablecen ?> jugadores</td>
+				</tr>
+			<?php endif ?>
+			<?php if ($regalan > 0) : ?>
+				<tr>
+					<th>Regalan a otros </th>
+					<td><?= $regalan ?> jugadores</td>
+				</tr>
+			<?php endif ?>
+			<tr>
+				<td colspan="2">
 					<p>Los jugadores eliminados o desactivados aparecerán en la pestaña de eliminados.</p>
 				</td>
 			</tr>

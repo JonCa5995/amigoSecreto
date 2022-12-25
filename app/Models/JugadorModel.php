@@ -81,4 +81,9 @@ class JugadorModel extends Model
 	public function actualizarJugadores(array $jugadores) {
 		 $this->updateBatch($jugadores, 'id');
 	 }
+	 
+	 public function countPorColumna(string $columna) {
+		$model = 'regala' === $columna ? $this->where('regala IS NOT NULL') : $this->where($columna, true);
+		return $model->countAllResults();
+	 }
 }

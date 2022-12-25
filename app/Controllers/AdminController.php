@@ -20,10 +20,16 @@ class AdminController extends BaseController
     {
 			$admin = $this->jugadorModel->find(session()->id);
 			$jugadores = $this->jugadorModel->paginate();
+			$activados = $this->jugadorModel->countPorColumna('activado');
+			$restablecen = $this->jugadorModel->countPorColumna('restablece');
+			$regalan = $this->jugadorModel->countPorColumna('regala');
 			return view('admin/jugadores', [
 				'nombre' => $admin->nombre,
 				'jugadores' => $jugadores,
-				'pager' => $this->jugadorModel->pager
+				'pager' => $this->jugadorModel->pager,
+				'activados' => $activados,
+				'restablecen' => $restablecen,
+				'regalan' => $regalan
 			]);
 			}
 	 
