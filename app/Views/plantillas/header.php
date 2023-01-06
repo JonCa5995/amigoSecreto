@@ -18,6 +18,12 @@
 							Mi juego
 						</a>
 					</li>
+					<li class="nav-item">
+						<a class="nav-link <?= url_is(route_to('deseos')) ? 'active' : '' ?>"
+							href="<?= url_to('deseos') ?>">
+							Deseos
+						</a>
+					</li>
 					<?php if (session()->admin ) : ?>
 					<li class="nav-item">
 						<a class="nav-link <?= url_is(route_to('adminInicio') . '*') ? 'active' : '' ?>"

@@ -30,7 +30,7 @@ class Auth implements FilterInterface
 			  return redirect('inicio');
 		  }
 		  
-		  if (url_is(route_to('jugadorJuego'))) {
+		  if (url_is(route_to('jugadorJuego')) || url_is(route_to('deseos') . '*')) {
 			  return null;
 		  }
 		  

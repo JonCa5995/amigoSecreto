@@ -12,8 +12,8 @@
 			<label for="nombre" class="form-label">Nombre</label>
 			<input id="nombre" type="text" minlength="3" maxlength="32" name="nombre"
 					 required autofocus placeholder="Escriba su nombre..."
-					<?= !empty($nombre) ? 'value="' . $nombre . '" disabled' : '' ?>
-					 class="form-control <?= session()->errUsu ? 'is-invalid' : '' ?>"
+					<?= !empty($nombre) ? 'value="' . $nombre . '" readonly' : '' ?>
+					 class="form-control <?= session()->errUsu ? 'is-invalid' : '' ?> <?= !empty($nombre) ? 'bg-light' : '' ?>"
 			>
 		</div>
 		<div class="mb-3">

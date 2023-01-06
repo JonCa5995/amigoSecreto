@@ -2,6 +2,7 @@
 
 namespace App\Entities;
 
+use App\Models\DeseoModel;
 use App\Models\JugadorModel;
 use CodeIgniter\Entity\Entity;
 
@@ -18,7 +19,8 @@ class Jugador extends Entity
 		 'regala'		=> null,
 		 'created_at'	=> null,
 		 'updated_at'	=> null,
-		 'deleted_at'	=> null
+		 'deleted_at'	=> null,
+		 'deseos'		=> []
 	 ];
     protected $datamap = [];
     protected $dates   = ['created_at', 'updated_at', 'deleted_at'];
@@ -29,10 +31,10 @@ class Jugador extends Entity
 		 'admin'			=> 'boolean',
 		 'activado'		=> 'boolean',
 		 'restablece'	=> 'boolean',
-		 'regala'		=> '?string'
+		 'deseos'		=> 'array'
 	 ];
-	 
-	 protected function setNombre($nombre) {
+	
+	protected function setNombre($nombre) {
 		 $this->attributes['nombre'] = base64_encode(convert_uuencode($nombre));
 	 }
 	 
@@ -65,14 +67,27 @@ class Jugador extends Entity
 		 $this->attributes['activado'] = $activado == 'on' || $activado == 1 || $activado;
 	 }
 	 
-	 protected function getRegala() {
+	 protected function getRegala(): object|array|null
+	 {
 		 if ($this->attributes['regala'] == null) return null;
 		 $jugadorModel = new JugadorModel();
-		 $jugador = $jugadorModel->withDeleted()->find($this->attributes['regala']);
-		 return $jugador->nombre;
+		 return $jugadorModel->withDeleted()->find($this->attributes['regala']);
 	 }
 	 
-	 public function isRegistrado() {
+	 public function isRegistrado(): bool
+	 {
 		 return $this->attributes['clave'] != null;
+	 }
+
+	 public function setDeseo(Deseo $deseo) {
+		 $deseo->id_jugador = $this->attributes['id'];
+		 $deseosModel = new DeseoModel();
+		 $deseosModel->save($deseo);
+	 }
+	 
+	 public function getDeseos(): array
+	 {
+		 $deseosModel = new DeseoModel();
+		 return $deseosModel->obtenerDeseos($this->attributes['id']);
 	 }
 }

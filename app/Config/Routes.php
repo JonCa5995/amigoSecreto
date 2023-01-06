@@ -36,7 +36,7 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'JugadorController::index', ['as' => 'inicio']);
-$routes->get('jugador/(:segment)', 'JugadorController::inicio/$1', ['as' => 'jugadorInicio', 'filter' => 'auth']);
+$routes->get('jugador/(:segment)', 'JugadorController::inicio/$1', ['as' => 'jugadorInicio']);
 $routes->post('registro', 'JugadorController::registro', ['as' => 'jugadorRegistro']);
 $routes->post('entrar', 'JugadorController::entrar', ['as' => 'jugadorEntrar']);
 $routes->get('salir', 'JugadorController::salir', ['as' => 'salir']);
@@ -44,6 +44,10 @@ $routes->get('juego', 'JugadorController::juego', ['as' => 'jugadorJuego', 'filt
 $routes->post('activa', 'JugadorController::activar', ['as' => 'jugadorActiva']);
 $routes->post('resetClave', 'JugadorController::resetClave', ['as' => 'resetClave']);
 
+$routes->group('deseos', ['filter' => 'auth'], function($routes) {
+	$routes->match(['get', 'post'], '/', 'JugadorController::deseos', ['as' => 'deseos']);
+	$routes->get('eliminar/(:num)', 'JugadorController::eliminarDeseo/$1', ['as' => 'eliminarDeseo']);
+});
 
 $routes->group('admin', ['filter' => 'auth'], function($routes) {
 	$routes->get('/', 'AdminController::index', ['as' => 'adminInicio']);

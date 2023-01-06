@@ -3,7 +3,9 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Entities\Deseo;
 use App\Entities\Jugador;
+use App\Models\DeseoModel;
 use App\Models\JugadorModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\View\View;
@@ -12,9 +14,11 @@ use Config\Services;
 class JugadorController extends BaseController
 {
 	private JugadorModel $jugadorModel;
+	private DeseoModel $deseoModel;
 	
 	public function __construct() {
 		$this->jugadorModel = new JugadorModel();
+		$this->deseoModel = new DeseoModel();
 	}
 	
     public function index(): string|RedirectResponse
@@ -29,19 +33,23 @@ class JugadorController extends BaseController
 	 public function inicio($nombre = null): string|RedirectResponse
      {
 		 helper('text');
+		 session();
 		if ($nombre != null) {
 			$nombre = str_replace(' ', '+', $nombre);
 			$jugador = $this->jugadorModel->where('nombre', $nombre)->first();
 			if ($jugador) {
-				if ($jugador->isRegistrado()) {
-					$view = 'jugador/inicio';
-				} else {
-					$view = 'jugador/registro';
+				if (!session()->dentro || session()->id != $jugador->id) {
+					session()->destroy();
+					if ($jugador->isRegistrado()) {
+						$view = 'jugador/inicio';
+					} else {
+						$view = 'jugador/registro';
+					}
+					return view($view, [
+						'nombre' => $jugador->nombre,
+						'claveNombre' => $nombre
+					]);
 				}
-				return view($view, [
-					'nombre' => $jugador->nombre,
-					'claveNombre' => $nombre
-				]);
 			}
 		}
 		return redirect('inicio');
@@ -170,5 +178,52 @@ class JugadorController extends BaseController
 		 } finally {
 			 return redirect('inicio')->with('errores', $err)->with('msg', $msg);
 		 }
+	 }
+	 
+	 public function deseos() {
+		session();
+		$jugador = $this->jugadorModel->find(session()->id);
+		$err = [];
+		$msg = [];
+		if ($this->request->getMethod() == 'post') {
+			$reglas = [
+				'descripcion' => 'required|min_length[3]|max_length[255]'
+			];
+			if (!$this->validate($reglas)) {
+				$err[] = $this->validator->getErrors();
+			} else {
+				try {
+					$jugador->deseo = new Deseo($this->request->getPost());
+					$msg[] = 'Deseo guardado correctamente';
+				} catch (\ReflectionException $e) {
+					$err[] = 'No se ha podido guardar el deseo';
+				}
+			}
+			return redirect()->route('deseos', [], 302, 'get')->with('errores', $err)->with('msg', $msg);
+		}
+		
+		session()->setFlashdata('errores', $err);
+		session()->setFlashdata('msg', $msg);
+		return view('jugador/deseos', [
+			'jugador' => $jugador
+		]);
+	 }
+	 
+	 public function deseosRecientes(array $args) {
+		return view('jugador/listaDeseos', [
+			'deseos' => $this->deseoModel->whereNotIn('id_jugador', [$args['id']])->orderBy('updated_at', 'desc')->findAll($args['limite'] ?? 0)
+		]);
+	 }
+	 
+	 public function eliminarDeseo($id): RedirectResponse
+	 {
+		$err = [];
+		$msg = [];
+		if ($this->deseoModel->delete($id)) {
+			$msg[] = 'Deseo eliminado correctamente';
+		} else {
+			$err[] = 'No se ha podido eliminar el deseo';
+		}
+		return redirect('deseos')->with('errores', $err)->with('msg', $msg);
 	 }
 }
