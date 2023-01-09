@@ -1,6 +1,7 @@
-<div class="card col-sm-12 col-md-6">
+
+<div class="card col-sm-12 col-md-5">
 	<div class="card-header d-flex justify-content-between">
-		<?= $deseo->jugador->nombre ?>
+		<strong class="me-auto"><?= $deseo->jugador->nombre ?></strong>
 		<span class="text-muted"><?= $deseo->updated_at->humanize() ?></span>
 	</div>
 	<card-body>
